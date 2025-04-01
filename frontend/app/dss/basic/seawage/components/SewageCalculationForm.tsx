@@ -1,6 +1,6 @@
 // components/SewageCalculationForm.tsx
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 type SewageMethod = 'water_supply' | 'domestic_sewage' | '';
 type DomesticLoadMethod = 'manual' | 'modeled' | '';
@@ -57,6 +57,13 @@ const SewageCalculationForm: React.FC = () => {
     babbitt: false,
   });
   const [peakFlowTable, setPeakFlowTable] = useState<JSX.Element | null>(null);
+
+  // check for the total water supply value from the previous stage and set it in totalSupplyInput.
+  useEffect(() => {
+    if (sewageMethod === 'water_supply' && (window as any).totalWaterSupply) {
+      setTotalSupplyInput(Number((window as any).totalWaterSupply));
+    }
+  }, [sewageMethod]);
 
   // --- Handlers for Sewage Calculation ---
   const handleSewageMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

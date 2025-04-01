@@ -109,6 +109,84 @@ class SewageCalculation(APIView):
                 return Response({"error": "Invalid domestic load method"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"error": "Invalid sewage method"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class WaterSupplyCalculationAPI(APIView):
+    def post(self, request, format=None):
+        data = request.data
+        
+        try:
+            # Retrieve and convert input values; if empty, use default (0 or None)
+            surface_water = float(data.get("surface_water", 0))
+            
+            # Groundwater inputs
+            direct_groundwater = data.get("direct_groundwater")
+            if direct_groundwater not in [None, ""]:
+                direct_groundwater = float(direct_groundwater)
+            else:
+                direct_groundwater = None
+
+            num_tubewells = data.get("num_tubewells")
+            num_tubewells = float(num_tubewells) if num_tubewells not in [None, ""] else 0
+
+            discharge_rate = data.get("discharge_rate")
+            discharge_rate = float(discharge_rate) if discharge_rate not in [None, ""] else 0
+
+            operating_hours = data.get("operating_hours")
+            operating_hours = float(operating_hours) if operating_hours not in [None, ""] else 0
+
+            # Alternate supply inputs
+            direct_alternate = data.get("direct_alternate")
+            if direct_alternate not in [None, ""]:
+                direct_alternate = float(direct_alternate)
+            else:
+                direct_alternate = None
+
+            rooftop_tank = data.get("rooftop_tank")
+            rooftop_tank = float(rooftop_tank) if rooftop_tank not in [None, ""] else 0
+
+            aquifer_recharge = data.get("aquifer_recharge")
+            aquifer_recharge = float(aquifer_recharge) if aquifer_recharge not in [None, ""] else 0
+
+            surface_runoff = data.get("surface_runoff")
+            surface_runoff = float(surface_runoff) if surface_runoff not in [None, ""] else 0
+
+            reuse_water = data.get("reuse_water")
+            reuse_water = float(reuse_water) if reuse_water not in [None, ""] else 0
+
+            # Check for conflicts in groundwater inputs:
+            if direct_groundwater is not None and (num_tubewells > 0 or discharge_rate > 0 or operating_hours > 0):
+                return Response(
+                    {"error": "Provide either direct groundwater supply or tube well inputs, not both."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Check for conflicts in alternate supply inputs:
+            if direct_alternate is not None and (rooftop_tank > 0 or aquifer_recharge > 0 or surface_runoff > 0 or reuse_water > 0):
+                return Response(
+                    {"error": "Provide either direct alternate supply or alternate component inputs, not both."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Compute groundwater supply
+            if direct_groundwater is not None:
+                groundwater_supply = direct_groundwater
+            else:
+                groundwater_supply = num_tubewells * discharge_rate * operating_hours
+
+            # Compute alternate supply
+            if direct_alternate is not None:
+                alternate_supply = direct_alternate
+            else:
+                alternate_supply = rooftop_tank + aquifer_recharge + surface_runoff + reuse_water
+
+            # Total water supply
+            total_supply = surface_water + groundwater_supply + alternate_supply
+        
+
+            return Response({"total_supply": total_supply}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 

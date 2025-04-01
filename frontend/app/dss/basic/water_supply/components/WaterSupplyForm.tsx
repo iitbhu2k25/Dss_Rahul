@@ -33,53 +33,52 @@ const WaterSupplyForm: React.FC = () => {
   const areAlternateInputsProvided =
     rooftopTank !== '' || aquiferRecharge !== '' || surfaceRunoff !== '' || reuseWater !== '';
 
-  // Calculation function for water supply
-  const calculateWaterSupply = () => {
+  // Function to call the backend API to perform the calculation
+  const handleCalculateWaterSupply = async () => {
     setError(null);
-
     // Check for input conflicts
     if (isDirectGroundwaterProvided && areTubeWellInputsProvided) {
-      setError(
-        'Error: Provide either direct groundwater supply or tube well inputs, not both.'
-      );
+      setError('Error: Provide either direct groundwater supply or tube well inputs, not both.');
       return;
     }
     if (isDirectAlternateProvided && areAlternateInputsProvided) {
-      setError(
-        'Error: Provide either direct alternate supply or alternate component inputs, not both.'
-      );
+      setError('Error: Provide either direct alternate supply or alternate component inputs, not both.');
       return;
     }
 
-    // Compute groundwater supply:
-    let groundwaterSupply = 0;
-    if (isDirectGroundwaterProvided) {
-      groundwaterSupply = Number(directGroundwater);
-    } else if (areTubeWellInputsProvided) {
-      groundwaterSupply =
-        (Number(numTubewells) || 0) *
-        (Number(dischargeRate) || 0) *
-        (Number(operatingHours) || 0);
+    // Build payload from input values
+    const payload = {
+      surface_water: surfaceWater === '' ? 0 : Number(surfaceWater),
+      direct_groundwater: directGroundwater === '' ? 0 : Number(directGroundwater),
+      num_tubewells: numTubewells === '' ? 0 : Number(numTubewells),
+      discharge_rate: dischargeRate === '' ? 0 : Number(dischargeRate),
+      operating_hours: operatingHours === '' ? 0 : Number(operatingHours),
+      direct_alternate: directAlternate === '' ? 0 : Number(directAlternate),
+      rooftop_tank: rooftopTank === '' ? 0 : Number(rooftopTank),
+      aquifer_recharge: aquiferRecharge === '' ? 0 : Number(aquiferRecharge),
+      surface_runoff: surfaceRunoff === '' ? 0 : Number(surfaceRunoff),
+      reuse_water: reuseWater === '' ? 0 : Number(reuseWater),
+    };
+
+    try {
+      const response = await fetch('http://localhost:9000/api/basic/water_supply/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        setError(err.error || 'Error calculating water supply.');
+        return;
+      }
+      const data = await response.json();
+      setWaterSupplyResult(data.total_supply);
+      // Save globally so that sewage stage can use it
+      (window as any).totalWaterSupply = data.total_supply;
+    } catch (err) {
+      console.error(err);
+      setError('Error connecting to backend.');
     }
-
-    // Compute alternate water supply:
-    let alternateSupply = 0;
-    if (isDirectAlternateProvided) {
-      alternateSupply = Number(directAlternate);
-    } else if (areAlternateInputsProvided) {
-      alternateSupply =
-        (Number(rooftopTank) || 0) +
-        (Number(aquiferRecharge) || 0) +
-        (Number(surfaceRunoff) || 0) +
-        (Number(reuseWater) || 0);
-    }
-
-    // Surface water supply
-    const surfaceSupply = Number(surfaceWater) || 0;
-
-    // Total water supply calculation
-    const totalSupply = surfaceSupply + groundwaterSupply + alternateSupply;
-    setWaterSupplyResult(totalSupply);
   };
 
   return (
@@ -120,8 +119,8 @@ const WaterSupplyForm: React.FC = () => {
               setDirectGroundwater(e.target.value === '' ? '' : Number(e.target.value))
             }
             className={`mt-1 block w-1/3 border rounded px-2 py-1 ${
-                areTubeWellInputsProvided ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'
-              }`}
+              areTubeWellInputsProvided ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'
+            }`}
             placeholder="Enter MLD"
             min="0"
             disabled={areTubeWellInputsProvided}
@@ -200,8 +199,8 @@ const WaterSupplyForm: React.FC = () => {
               setDirectAlternate(e.target.value === '' ? '' : Number(e.target.value))
             }
             className={`mt-1 block w-1/3 border rounded px-2 py-1 ${
-                areAlternateInputsProvided ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'
-              }`}
+              areAlternateInputsProvided ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'
+            }`}
             placeholder="Enter MLD"
             min="0"
             disabled={areAlternateInputsProvided}
@@ -289,7 +288,7 @@ const WaterSupplyForm: React.FC = () => {
 
       <button
         className="bg-blue-600 text-white px-4 py-2 rounded"
-        onClick={calculateWaterSupply}
+        onClick={handleCalculateWaterSupply}
       >
         Calculate Water Supply
       </button>
