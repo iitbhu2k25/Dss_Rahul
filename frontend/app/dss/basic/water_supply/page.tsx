@@ -1,13 +1,13 @@
-"use client"
-import React from "react"
+// app/dss/basic/waterdemand/page.tsx (or a separate page for water supply)
+import React from 'react';
+import WaterSupplyForm from './components/WaterSupplyForm';
 
-const Water_Supply: React.FC = () => {
-    return (
-        <div>
-            water supply
-        </div>
-    )
-}
+const WaterSupplyPage = () => {
+  return (
+    <div className="container mx-auto p-4">
+      <WaterSupplyForm />
+    </div>
+  );
+};
 
-
-export default Water_Supply
+export default WaterSupplyPage;

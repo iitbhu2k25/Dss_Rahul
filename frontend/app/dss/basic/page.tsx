@@ -69,12 +69,14 @@ const Basic: React.FC = () => {
         )}
         {
           (currentCount == 1) && (
-            <Water_Supply />
+            <Water_Demand />
+           
           )
         }
         {
           (currentCount == 2) && (
-            <Water_Demand />
+            
+            <Water_Supply />
           )
         }
         {

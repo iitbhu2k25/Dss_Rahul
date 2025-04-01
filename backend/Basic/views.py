@@ -55,6 +55,60 @@ class Time_series(APIView):
             pass
         print("output",main_output)
         return Response(main_output, status=status.HTTP_200_OK)
+    
+
+class SewageCalculation(APIView):
+    """
+    Calculate sewage generation using either the water supply approach
+    or the domestic sewage approach.
+    """
+    def post(self, request, format=None):
+        method = request.data.get('method')
+        if method == 'water_supply':
+            try:
+                total_supply = float(request.data.get('total_supply'))
+            except (TypeError, ValueError):
+                return Response({"error": "Invalid total supply"}, status=status.HTTP_400_BAD_REQUEST)
+            if total_supply <= 0:
+                return Response({"error": "Total supply must be greater than zero"}, status=status.HTTP_400_BAD_REQUEST)
+            sewage_demand = total_supply * 0.84  # example formula
+            # For a single-year example, we return the result under a fixed year key.
+            return Response({"sewage_demand": sewage_demand}, status=status.HTTP_200_OK)
+        elif method == 'domestic_sewage':
+            load_method = request.data.get('load_method')
+            if load_method == 'manual':
+                try:
+                    domestic_supply = float(request.data.get('domestic_supply'))
+                except (TypeError, ValueError):
+                    return Response({"error": "Invalid domestic supply"}, status=status.HTTP_400_BAD_REQUEST)
+                if domestic_supply <= 0:
+                    return Response({"error": "Domestic supply must be greater than zero"}, status=status.HTTP_400_BAD_REQUEST)
+                sewage_demand = domestic_supply * 0.84  # example formula
+                return Response({"sewage_demand": sewage_demand}, status=status.HTTP_200_OK)
+            elif load_method == 'modeled':
+                # For a modeled approach, we require computed_population data
+                computed_population = request.data.get('computed_population')
+                try:
+                    unmetered = float(request.data.get('unmetered_supply', 0))
+                except (TypeError, ValueError):
+                    unmetered = 0
+                if not computed_population:
+                    return Response({"error": "Computed population data not provided."}, status=status.HTTP_400_BAD_REQUEST)
+                # Assume computed_population is a dictionary of year: population
+                result = {}
+                for year, pop in computed_population.items():
+                    try:
+                        pop_val = float(pop)
+                    except (TypeError, ValueError):
+                        continue
+                    multiplier = (135 + unmetered) / 1000000
+                    sewage_gen = pop_val * multiplier * 0.80  # example formula
+                    result[year] = sewage_gen
+                return Response({"sewage_result": result}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Invalid domestic load method"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error": "Invalid sewage method"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
