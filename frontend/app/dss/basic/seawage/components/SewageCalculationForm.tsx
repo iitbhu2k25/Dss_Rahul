@@ -491,16 +491,23 @@ const SewageCalculationForm: React.FC = () => {
               <thead>
                 <tr>
                   <th className="border px-2 py-1">Year</th>
+                  <th className="border px-4 py-2">Forecasted Population</th>
                   <th className="border px-2 py-1">Sewage Generation (MLD)</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(sewageResult).map(([year, value]) => (
-                  <tr key={year}>
-                    <td className="border px-2 py-1">{year}</td>
-                    <td className="border px-2 py-1">{Number(value).toFixed(2)}</td>
-                  </tr>
-                ))}
+                {Object.entries(sewageResult).map(([year, value]) =>{
+                  const forecastData = (window as any).selectedPopulationForecast;
+                  const domesticPop = forecastData[year] ?? "";
+                  return (
+                    <tr key={year}>
+                      <td className="border px-2 py-1">{year}</td>
+                      <td className="border px-4 py-2">{domesticPop}</td>
+                      <td className="border px-2 py-1">{Number(value).toFixed(2)}</td>
+                    </tr>
+                  );
+                    
+                })}
               </tbody>
             </table>
           )}
