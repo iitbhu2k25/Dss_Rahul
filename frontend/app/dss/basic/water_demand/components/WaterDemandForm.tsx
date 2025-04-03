@@ -64,40 +64,40 @@ const WaterDemandForm: React.FC = () => {
 
   // Institutional fields (sample fields; add more as needed)
   const [institutionalFields, setInstitutionalFields] = useState<InstitutionalFields>({
-    hospitals100Units: '',
-    beds100: '',
-    hospitalsLess100: '',
-    bedsLess100: '',
-    hotels: '',
-    bedsHotels: '',
-    hostels: '',
-    residentsHostels: '',
-    nursesHome: '',
-    residentsNursesHome: '',
-    boardingSchools: '',
-    studentsBoardingSchools: '',
-    restaurants: '',
-    seatsRestaurants: '',
-    airportsSeaports: '',
-    populationLoadAirports: '',
-    junctionStations: '',
-    populationLoadJunction: '',
-    terminalStations: '',
-    populationLoadTerminal: '',
-    intermediateBathing: '',
-    populationLoadBathing: '',
-    intermediateNoBathing: '',
-    populationLoadNoBathing: '',
-    daySchools: '',
-    studentsDaySchools: '',
-    offices: '',
-    employeesOffices: '',
-    factorieswashrooms: '',
-    employeesFactories: '',
-    factoriesnoWashrooms: '',
-    employeesFactoriesNoWashrooms: '',
-    cinemas: '',
-    seatsCinemas: '',
+    hospitals100Units: "0",
+    beds100: "0",
+    hospitalsLess100: "0",
+    bedsLess100: "0",
+    hotels: "0",
+    bedsHotels: "0",
+    hostels: "0",
+    residentsHostels: "0",
+    nursesHome: "0",
+    residentsNursesHome: "0",
+    boardingSchools: "0",
+    studentsBoardingSchools: "0",
+    restaurants: "0",
+    seatsRestaurants: "0",
+    airportsSeaports: "0",
+    populationLoadAirports: "0",
+    junctionStations: "0",
+    populationLoadJunction: "0",
+    terminalStations: "0",
+    populationLoadTerminal: "0",
+    intermediateBathing: "0",
+    populationLoadBathing: "0",
+    intermediateNoBathing: "0",
+    populationLoadNoBathing: "0",
+    daySchools: "0",
+    studentsDaySchools: "0",
+    offices: "0",
+    employeesOffices: "0",
+    factorieswashrooms: "0",
+    employeesFactories: "0",
+    factoriesnoWashrooms: "0",
+    employeesFactoriesNoWashrooms: "0",
+    cinemas: "0",
+    seatsCinemas: "0",
   });
 
   // Firefighting methods selection
@@ -108,6 +108,16 @@ const WaterDemandForm: React.FC = () => {
     american_insurance: false,
     ministry_urban: false,
   });
+
+  // New state to store domestic water demand results
+  const [domesticDemand, setDomesticDemand] = useState<{ [year: string]: number } | null>(null);
+  const [floatingDemand, setFloatingDemand] = useState<{ [year: string]: number } | null>(null);
+  const [institutionalDemand, setInstitutionalDemand] = useState<{ [year: string]: number } | null>(null);
+  const [firefightingDemand, setFirefightingDemand] = useState<{ [method: string]: { [year: string]: number } } | null>(null);
+  const [selectedFirefightingMethod, setSelectedFirefightingMethod] = useState<string>("");
+
+  const forecastData = (window as any).selectedPopulationForecast;
+
 
   // Handlers for checkboxes and inputs
   const handleDomesticChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,18 +146,113 @@ const WaterDemandForm: React.FC = () => {
     });
   };
 
-  // Example calculation handler – replace with your own calculation logic
-  const handleCalculate = () => {
-    // Here you would combine your states and compute water demand.
-    // For example:
-    // const domesticDemand = computedPopulation * (perCapitaConsumption / 1_000_000);
-    // Similarly for floating, institutional, and firefighting.
-    console.log('Calculating Water Demand with inputs:');
-    console.log('Domestic:', domesticChecked, perCapitaConsumption);
-    console.log('Floating:', floatingChecked, floatingPopulation2011, facilityType);
-    console.log('Institutional:', institutionalChecked, institutionalFields);
-    console.log('Firefighting:', firefightingChecked, firefightingMethods);
+  // This function calculates only the firefighting water demand when the "Calculate Firefighting Water Demand" button is clicked
+  const handleCalculateFirefighting = async () => {
+    if (!forecastData) {
+      console.error("Forecast data not available.");
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:9000/api/basic/firefighting_water_demand/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firefighting_methods: firefightingMethods,
+          domestic_forecast: forecastData,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Firefighting HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log("Firefighting Water Demand (from backend):", result);
+      setFirefightingDemand(result);
+    } catch (error) {
+      console.error("Error calculating firefighting water demand:", error);
+    }
   };
+
+  // Example calculation handler – replace with your own calculation logic
+  const handleCalculate = async () => {
+    // Retrieve global forecast data and selected population method
+    const selectedPopulationMethod = (window as any).selectedPopulationMethod;
+    const forecastData = (window as any).selectedPopulationForecast;
+    console.log("Selected Population Method:", selectedPopulationMethod);
+    console.log("Forecast Data:", forecastData);
+  
+    if (!forecastData) {
+      console.error("Forecast data not available.");
+      return;
+    }
+  
+    try {
+      // --- Domestic Water Demand Calculation ---
+      if (domesticChecked) {
+        const domesticResponse = await fetch('http://localhost:9000/api/basic/domestic_water_demand/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            forecast_data: forecastData,
+            per_capita_consumption: perCapitaConsumption, // effective = 135 + user input
+          }),
+        });
+  
+        if (!domesticResponse.ok) {
+          throw new Error(`Domestic HTTP error! Status: ${domesticResponse.status}`);
+        }
+        const domesticDemandResult = await domesticResponse.json();
+        console.log("Domestic Water Demand (from backend):", domesticDemandResult);
+        setDomesticDemand(domesticDemandResult);
+      }
+  
+      // --- Floating Water Demand Calculation ---
+      if (floatingChecked) {
+        if (floatingPopulation2011 === null) {
+          console.error("Floating population not provided.");
+        } else {
+          // The backend uses facility_type to determine the multiplier:
+          // "provided" => 45, "notprovided" => 25, "onlypublic" => 15.
+          const floatingResponse = await fetch('http://localhost:9000/api/basic/floating_water_demand/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              floating_population: floatingPopulation2011,
+              facility_type: facilityType,
+              domestic_forecast: forecastData, // used to compute growth ratio for subsequent years
+            }),
+          });
+          if (!floatingResponse.ok) {
+            throw new Error(`Floating HTTP error! Status: ${floatingResponse.status}`);
+          }
+          const floatingDemandResult = await floatingResponse.json();
+          console.log("Floating Water Demand (from backend):", floatingDemandResult);
+          setFloatingDemand(floatingDemandResult);
+        }
+      }
+      if (institutionalChecked) {
+        const institutionalResponse = await fetch('http://localhost:9000/api/basic/institutional_water_demand/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            institutional_fields: institutionalFields,
+            domestic_forecast: forecastData,
+          }),
+        });
+  
+        if (!institutionalResponse.ok) {
+          throw new Error(`Institutional HTTP error! Status: ${institutionalResponse.status}`);
+        }
+        const institutionalResult = await institutionalResponse.json();
+        console.log("Institutional Water Demand (from backend):", institutionalResult);
+        setInstitutionalDemand(institutionalResult);
+      }
+      
+    } catch (error) {
+      console.error("Error calculating water demand:", error);
+    }
+  };
+  
+  
 
   return (
     <div className="p-4 border rounded bg-white">
@@ -197,7 +302,7 @@ const WaterDemandForm: React.FC = () => {
                   type="number" 
                   value={floatingPopulation2011 ?? ''}
                   onChange={handleFloatingPopulationChange}
-                  className="mt-1 block w-full border rounded px-2 py-1"
+                  className="mt-1 block w-xs border rounded px-2 py-1"
                   placeholder='Enter number'
                 />
               </label>
@@ -209,7 +314,7 @@ const WaterDemandForm: React.FC = () => {
             <select 
               value={facilityType}
               onChange={(e) => setFacilityType(e.target.value)}
-              className="border rounded px-2 py-1 mt-1"
+              className="border rounded w-xs px-2 py-1 mt-1"
             >
               <option value="provided">Bathing facilities provided</option>
               <option value="notprovided">Bathing facilities not provided</option>
@@ -233,7 +338,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hospitals_100_units"
                 value={institutionalFields.hospitals100Units}
                 onChange={(e) => handleInstitutionalFieldChange('hospitals100Units', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -246,7 +351,7 @@ const WaterDemandForm: React.FC = () => {
                 id="beds_100"
                 value={institutionalFields.beds100}
                 onChange={(e) => handleInstitutionalFieldChange('beds100', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -259,7 +364,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hospitals_less_100"
                 value={institutionalFields.hospitalsLess100}
                 onChange={(e) => handleInstitutionalFieldChange('hospitalsLess100', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -272,7 +377,7 @@ const WaterDemandForm: React.FC = () => {
                 id="beds_less_100"
                 value={institutionalFields.bedsLess100}
                 onChange={(e) => handleInstitutionalFieldChange('bedsLess100', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -285,7 +390,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hotels"
                 value={institutionalFields.hotels}
                 onChange={(e) => handleInstitutionalFieldChange('hotels', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -298,7 +403,7 @@ const WaterDemandForm: React.FC = () => {
                 id="beds_hotels"
                 value={institutionalFields.bedsHotels}
                 onChange={(e) => handleInstitutionalFieldChange('bedsHotels', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -311,7 +416,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hostels"
                 value={institutionalFields.hostels}
                 onChange={(e) => handleInstitutionalFieldChange('hostels', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -324,7 +429,7 @@ const WaterDemandForm: React.FC = () => {
                 id="residents_hostels"
                 value={institutionalFields.residentsHostels}
                 onChange={(e) => handleInstitutionalFieldChange('residentsHostels', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -337,7 +442,7 @@ const WaterDemandForm: React.FC = () => {
                 id="nurses_home"
                 value={institutionalFields.nursesHome}
                 onChange={(e) => handleInstitutionalFieldChange('nursesHome', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -350,7 +455,7 @@ const WaterDemandForm: React.FC = () => {
                 id="residents_nurses_home"
                 value={institutionalFields.residentsNursesHome}
                 onChange={(e) => handleInstitutionalFieldChange('residentsNursesHome', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -363,7 +468,7 @@ const WaterDemandForm: React.FC = () => {
                 id="boarding_schools"
                 value={institutionalFields.boardingSchools}
                 onChange={(e) => handleInstitutionalFieldChange('boardingSchools', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -376,7 +481,7 @@ const WaterDemandForm: React.FC = () => {
                 id="students_boarding_schools"
                 value={institutionalFields.studentsBoardingSchools}
                 onChange={(e) => handleInstitutionalFieldChange('studentsBoardingSchools', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -389,7 +494,7 @@ const WaterDemandForm: React.FC = () => {
                 id="restaurants"
                 value={institutionalFields.restaurants}
                 onChange={(e) => handleInstitutionalFieldChange('restaurants', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -402,7 +507,7 @@ const WaterDemandForm: React.FC = () => {
                 id="seats_restaurants"
                 value={institutionalFields.seatsRestaurants}
                 onChange={(e) => handleInstitutionalFieldChange('seatsRestaurants', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -415,7 +520,7 @@ const WaterDemandForm: React.FC = () => {
                 id="airports_seaports"
                 value={institutionalFields.airportsSeaports}
                 onChange={(e) => handleInstitutionalFieldChange('airportsSeaports', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -428,7 +533,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_airports"
                 value={institutionalFields.populationLoadAirports}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadAirports', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -441,7 +546,7 @@ const WaterDemandForm: React.FC = () => {
                 id="junction_stations"
                 value={institutionalFields.junctionStations}
                 onChange={(e) => handleInstitutionalFieldChange('junctionStations', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -454,7 +559,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_junction"
                 value={institutionalFields.populationLoadJunction}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadJunction', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -467,7 +572,7 @@ const WaterDemandForm: React.FC = () => {
                 id="terminal_stations"
                 value={institutionalFields.terminalStations}
                 onChange={(e) => handleInstitutionalFieldChange('terminalStations', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -480,7 +585,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_terminal"
                 value={institutionalFields.populationLoadTerminal}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadTerminal', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -493,7 +598,7 @@ const WaterDemandForm: React.FC = () => {
                 id="intermediate_bathing"
                 value={institutionalFields.intermediateBathing}
                 onChange={(e) => handleInstitutionalFieldChange('intermediateBathing', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -506,7 +611,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_bathing"
                 value={institutionalFields.populationLoadBathing}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadBathing', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -519,7 +624,7 @@ const WaterDemandForm: React.FC = () => {
                 id="intermediate_no_bathing"
                 value={institutionalFields.intermediateNoBathing}
                 onChange={(e) => handleInstitutionalFieldChange('intermediateNoBathing', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -532,7 +637,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_no_bathing"
                 value={institutionalFields.populationLoadNoBathing}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadNoBathing', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -545,7 +650,7 @@ const WaterDemandForm: React.FC = () => {
                 id="day_schools"
                 value={institutionalFields.daySchools}
                 onChange={(e) => handleInstitutionalFieldChange('daySchools', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -558,10 +663,37 @@ const WaterDemandForm: React.FC = () => {
                 id="students_day_schools"
                 value={institutionalFields.studentsDaySchools}
                 onChange={(e) => handleInstitutionalFieldChange('studentsDaySchools', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
+            <div>
+                <label htmlFor="offices" className="block text-sm font-medium">
+                  Offices (Units):
+                </label>
+                <input
+                  type="number"
+                  id="offices"
+                  value={institutionalFields.offices}
+                  onChange={(e) => handleInstitutionalFieldChange('offices', e.target.value)}
+                  className="mt-1 block w-xs border rounded px-2 py-1"
+                  placeholder="Enter number"
+                />
+            </div>
+            <div>
+              <label htmlFor="employees_offices" className="block text-sm font-medium">
+                Employees in Offices:
+              </label>
+              <input
+                type="number"
+                id="employees_offices"
+                value={institutionalFields.employeesOffices}
+                onChange={(e) => handleInstitutionalFieldChange('employeesOffices', e.target.value)}
+                className="mt-1 block w-xs border rounded px-2 py-1"
+                placeholder="Enter number"
+              />   
+            </div>
+
             <div>
               <label htmlFor="factories" className="block text-sm font-medium">
                 Factories (Units):
@@ -571,7 +703,7 @@ const WaterDemandForm: React.FC = () => {
                 id="factories"
                 value={institutionalFields.factorieswashrooms}
                 onChange={(e) => handleInstitutionalFieldChange('factorieswashrooms', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -584,7 +716,7 @@ const WaterDemandForm: React.FC = () => {
                 id="employees_factories"
                 value={institutionalFields.employeesFactories}
                 onChange={(e) => handleInstitutionalFieldChange('employeesFactories', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -597,7 +729,7 @@ const WaterDemandForm: React.FC = () => {
                 id="factories_no_washrooms"
                 value={institutionalFields.factoriesnoWashrooms}
                 onChange={(e) => handleInstitutionalFieldChange('factoriesnoWashrooms', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />              
             </div>
@@ -610,7 +742,7 @@ const WaterDemandForm: React.FC = () => {
                 id="employees_factories_no_washrooms"
                 value={institutionalFields.employeesFactoriesNoWashrooms}
                 onChange={(e) => handleInstitutionalFieldChange('employeesFactoriesNoWashrooms', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div> 
@@ -624,7 +756,7 @@ const WaterDemandForm: React.FC = () => {
                 id="cinemas"
                 value={institutionalFields.cinemas}
                 onChange={(e) => handleInstitutionalFieldChange('cinemas', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -637,7 +769,7 @@ const WaterDemandForm: React.FC = () => {
                 id="seats_cinemas"
                 value={institutionalFields.seatsCinemas}
                 onChange={(e) => handleInstitutionalFieldChange('seatsCinemas', e.target.value)}
-                className="mt-1 block w-full border rounded px-2 py-1"
+                className="mt-1 block w-xs border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -651,75 +783,208 @@ const WaterDemandForm: React.FC = () => {
       {/* Firefighting Fields */}
       {firefightingChecked && (
         <div className="mb-4 p-3 border rounded bg-blue-50">
-          <h6 className="font-bold text-blue-700 mb-3">Firefighting Fields</h6>
-          <div className="mb-3">
-            <label className="block text-sm font-medium">Select Firefighting Methods:</label>
-            <div className="flex flex-wrap gap-4 mt-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="firefighting_method_kuchling"
-                  checked={firefightingMethods.kuchling}
-                  onChange={(e) => handleFirefightingMethodChange('kuchling', e.target.checked)}
-                  className="mr-2"
-                />
-                Kuchling's Method
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="firefighting_method_freeman"
-                  checked={firefightingMethods.freeman}
-                  onChange={(e) => handleFirefightingMethodChange('freeman', e.target.checked)}
-                  className="mr-2"
-                />
-                Freeman Method
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="firefighting_method_buston"
-                  checked={firefightingMethods.buston}
-                  onChange={(e) => handleFirefightingMethodChange('buston', e.target.checked)}
-                  className="mr-2"
-                />
-                Buston Method
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="firefighting_method_american_insurance"
-                  checked={firefightingMethods.american_insurance}
-                  onChange={(e) => handleFirefightingMethodChange('american_insurance', e.target.checked)}
-                  className="mr-2"
-                />
-                American Insurance Association Method
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="firefighting_method_ministry_urban"
-                  checked={firefightingMethods.ministry_urban}
-                  onChange={(e) => handleFirefightingMethodChange('ministry_urban', e.target.checked)}
-                  className="mr-2"
-                />
-                Ministry of Urban Development Method
-              </label>
-            </div>
+          <h6 className="font-bold text-blue-700">Firefighting Fields</h6>
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={firefightingMethods.kuchling}
+                onChange={(e) => handleFirefightingMethodChange('kuchling', e.target.checked)}
+                className="mr-2"
+              />
+              Kuchling
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={firefightingMethods.freeman}
+                onChange={(e) => handleFirefightingMethodChange('freeman', e.target.checked)}
+                className="mr-2"
+              />
+              Freeman
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={firefightingMethods.buston}
+                onChange={(e) => handleFirefightingMethodChange('buston', e.target.checked)}
+                className="mr-2"
+              />
+              Buston
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={firefightingMethods.american_insurance}
+                onChange={(e) => handleFirefightingMethodChange('american_insurance', e.target.checked)}
+                className="mr-2"
+              />
+              American Insurance
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={firefightingMethods.ministry_urban}
+                onChange={(e) => handleFirefightingMethodChange('ministry_urban', e.target.checked)}
+                className="mr-2"
+              />
+              Ministry Urban
+            </label>
           </div>
-          <button type="button" className="bg-blue-600 text-white px-4 py-2 rounded">
+          {/* Button to calculate firefighting demand */}
+          <button 
+            type="button" 
+            className="mt-3 bg-green-600 text-white px-3 py-2 rounded"
+            onClick={handleCalculateFirefighting}
+          >
             Calculate Firefighting Water Demand
           </button>
-          <div id="firefighting_result" className="mt-3"></div>
+          {/* If firefighting demand has been calculated, display output table and radio buttons */}
+          {firefightingDemand && (
+            <div className="mt-3">
+              <h6 className="font-semibold text-blue-700 mb-1">Firefighting Demand Output</h6>
+              <div className="overflow-x-auto">
+                <table className="table-auto w-full bg-white border border-gray-300">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="border px-4 py-2">Year</th>
+                      {Object.keys(firefightingDemand).map((method) => (
+                        <th key={method} className="border px-4 py-2">{method}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.keys(forecastData).sort().map((year) => (
+                      <tr key={year}>
+                        <td className="border px-4 py-2">{year}</td>
+                        {Object.keys(firefightingDemand).map((method) => (
+                          <td key={method} className="border px-4 py-2">
+                            {firefightingDemand[method]?.[year]
+                              ? firefightingDemand[method][year].toFixed(2)
+                              : ""}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-2 text-sm font-semibold">Select one method for final output:</p>
+              <div className="flex gap-4">
+                {Object.keys(firefightingDemand).map((method) => (
+                  <label key={method} className="flex items-center">
+                    <input 
+                      type="radio"
+                      name="selectedFirefightingMethod"
+                      value={method}
+                      checked={selectedFirefightingMethod === method}
+                      onChange={() => setSelectedFirefightingMethod(method)}
+                      className="mr-1"
+                    />
+                    {method}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
+      {/* Main Calculate Water Demand Button */}
       <button 
         className="bg-blue-600 text-white px-4 py-2 rounded"
         onClick={handleCalculate}
       >
         Calculate Water Demand
       </button>
+
+      {(domesticDemand || floatingDemand || institutionalDemand || firefightingDemand) && forecastData && (
+        <div className="mt-6">
+            <h2 className="text-lg font-semibold mb-4">Water Demand</h2>
+            <div className="overflow-x-auto">
+            <table className="table-auto w-full min-w-[300px] bg-white border border-gray-300">
+                <thead className="bg-gray-200">
+                <tr>
+                    <th className="border px-4 py-2">Year</th>
+                    {domesticChecked && (
+                    <>
+                        <th className="border px-4 py-2">Forecasted Population</th>
+                        <th className="border px-4 py-2">Domestic Water Demand (ML)</th>
+                    </>
+                    )}
+                    {floatingChecked && (
+                    <th className="border px-4 py-2">Floating Water Demand (ML)</th>
+                    )}
+                    {institutionalChecked && (
+                    <th className="border px-4 py-2">Institutional Water Demand (ML)</th>
+                    )}
+                    {firefightingChecked && selectedFirefightingMethod && (
+                        <th className="border px-4 py-2">
+                        Firefighting Demand ({selectedFirefightingMethod}) (ML)
+                        </th>
+                    )}
+                    <th className="border px-4 py-2">Total Demand (MLD)</th>
+                </tr>
+                </thead>
+                <tbody>
+                {Object.keys(forecastData)
+                    .sort()
+                    .map((year) => {
+                    // For domestic, retrieve the forecasted population from the global variable
+                    const domesticPop = forecastData[year] ?? "";
+                    const domesticVal = domesticChecked && domesticDemand?.[year] ? domesticDemand[year] : 0;
+                    const floatingVal = floatingChecked && floatingDemand?.[year] ? floatingDemand[year] : 0;
+                    const institutionalVal = institutionalChecked && institutionalDemand?.[year] ? institutionalDemand[year] : 0;
+                    const firefightingVal =
+                    firefightingChecked && selectedFirefightingMethod && firefightingDemand?.[selectedFirefightingMethod]?.[year]
+                        ? firefightingDemand[selectedFirefightingMethod][year]
+                        : 0;
+                    const totalDemand = domesticVal + floatingVal + institutionalVal + firefightingVal;
+                    return (
+                        <tr key={year}>
+                        <td className="border px-4 py-2">{year}</td>
+                        {domesticChecked && (
+                            <>
+                            <td className="border px-4 py-2">{domesticPop}</td>
+                            <td className="border px-4 py-2">
+                                {domesticDemand?.[year]
+                                ? domesticDemand[year].toFixed(2)
+                                : ""}
+                            </td>
+                            </>
+                        )}
+                        {floatingChecked && (
+                            <td className="border px-4 py-2">
+                            {floatingDemand?.[year]
+                                ? floatingDemand[year].toFixed(2)
+                                : ""}
+                            </td>
+                        )}
+                        {institutionalChecked && (
+                            <td className="border px-4 py-2">
+                            {institutionalDemand?.[year]
+                                ? institutionalDemand[year].toFixed(2)
+                                : ""}
+                            </td>
+                        )}
+                        {firefightingChecked && selectedFirefightingMethod && (
+                          <td className="border px-4 py-2">
+                            {firefightingDemand?.[selectedFirefightingMethod]?.[year]
+                              ? firefightingDemand[selectedFirefightingMethod][year].toFixed(2)
+                              : ""}
+                          </td>
+                        )}
+                        <td className="border px-4 py-2">{totalDemand.toFixed(2)}</td>
+                        </tr>
+                    );
+                    })}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        )}
+
+
     </div>
   );
 };

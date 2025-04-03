@@ -4,7 +4,7 @@ import WaterSupplyForm from './components/WaterSupplyForm';
 
 const WaterSupplyPage = () => {
   return (
-    <div className="container mx-auto p-4">
+    <div className="container p-4 mt-5 bg-white rounded-lg shadow-md">
       <WaterSupplyForm />
     </div>
   );

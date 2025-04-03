@@ -7,7 +7,7 @@ const WaterDemandPage = () => {
   const [currentStage, setCurrentStage] = useState<'population' | 'water_demand' | 'water_supply' | 'sewage'>('water_demand');
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container p-4 mt-5 bg-white rounded-lg shadow-md">
 
       {currentStage === 'water_demand' && <WaterDemandForm />}
     </div>

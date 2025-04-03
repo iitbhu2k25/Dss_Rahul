@@ -1,6 +1,8 @@
 // components/SewageCalculationForm.tsx
 'use client';
 import React, { useState, useMemo, useEffect } from 'react';
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 type SewageMethod = 'water_supply' | 'domestic_sewage' | '';
 type DomesticLoadMethod = 'manual' | 'modeled' | '';
@@ -23,6 +25,7 @@ const defaultPollutionItems: PollutionItem[] = [
   { name: "Ortho Phosphorous", perCapita: 0.5 },
 ];
 
+
 const SewageCalculationForm: React.FC = () => {
   // --- Sewage Calculation States ---
   const [sewageMethod, setSewageMethod] = useState<SewageMethod>('');
@@ -38,12 +41,7 @@ const SewageCalculationForm: React.FC = () => {
   // --- New state: show raw sewage table only when calculated ---
   const [showRawSewage, setShowRawSewage] = useState(false);
 
-  // Dummy computed population (replace with your actual data)
-  const computedPopulation: { [year: string]: number } = {
-    "2011": 1000000,
-    "2025": 1200000,
-    "2030": 1400000,
-  };
+  const computedPopulation: { [year: string]: number } = (window as any).selectedPopulationForecast || {};
 
   // --- Raw Sewage Characteristics State (editable pollution items) ---
   const [pollutionItemsState, setPollutionItemsState] = useState<PollutionItem[]>(defaultPollutionItems);
@@ -513,6 +511,16 @@ const SewageCalculationForm: React.FC = () => {
         </button>
         {showRawSewage && <div className="mt-4">{rawSewageJSX}</div>}
       </div>
+
+      
+
+      <button 
+        className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out"
+        
+      >
+        Download Comprehensive Report
+      </button>
+
 
     </div>
   );
