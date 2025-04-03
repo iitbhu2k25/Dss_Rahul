@@ -150,7 +150,7 @@ const SewageCalculationForm: React.FC = () => {
     return 2.0;
   };
   const getHarmonFactor = (pop: number) => 1 + 14 / (4 + Math.sqrt(pop / 1000));
-  const getBabbittFactor = (pop: number) => 1 + 5 / Math.sqrt(pop / 1000);
+  const getBabbittFactor = (pop: number) => 5 / (pop/1000)**0.2;
 
   const handleCalculatePeakFlow = () => {
     if (!computedPopulation || !sewageResult) {
