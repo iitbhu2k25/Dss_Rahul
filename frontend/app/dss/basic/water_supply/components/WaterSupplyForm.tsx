@@ -98,7 +98,7 @@ const WaterSupplyForm: React.FC = () => {
             onChange={(e) =>
               setSurfaceWater(e.target.value === '' ? '' : Number(e.target.value))
             }
-            className="mt-1 block w-1/3 border rounded px-2 py-1"
+            className="mt-1 block w-1/3 border rounded px-2 py-1 bg-white"
             placeholder="Enter MLD"
             min="0"
           />

@@ -909,18 +909,18 @@ const WaterDemandForm: React.FC = () => {
                     {domesticChecked && (
                     <>
                         <th className="border px-4 py-2">Forecasted Population</th>
-                        <th className="border px-4 py-2">Domestic Water Demand (ML)</th>
+                        <th className="border px-4 py-2">Domestic Water Demand (MLD)</th>
                     </>
                     )}
                     {floatingChecked && (
-                    <th className="border px-4 py-2">Floating Water Demand (ML)</th>
+                    <th className="border px-4 py-2">Floating Water Demand (MLD)</th>
                     )}
                     {institutionalChecked && (
-                    <th className="border px-4 py-2">Institutional Water Demand (ML)</th>
+                    <th className="border px-4 py-2">Institutional Water Demand (MLD)</th>
                     )}
                     {firefightingChecked && selectedFirefightingMethod && (
                         <th className="border px-4 py-2">
-                        Firefighting Demand ({selectedFirefightingMethod}) (ML)
+                        Firefighting Demand ({selectedFirefightingMethod}) (MLD)
                         </th>
                     )}
                     <th className="border px-4 py-2">Total Demand (MLD)</th>

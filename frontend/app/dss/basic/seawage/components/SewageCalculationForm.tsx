@@ -145,8 +145,8 @@ const SewageCalculationForm: React.FC = () => {
 
   const getCPHEEOFactor = (pop: number) => {
     if (pop < 20000) return 3.0;
-    if (pop < 50000) return 2.5;
-    if (pop < 75000) return 2.25;
+    if (pop <= 50000) return 2.5;
+    if (pop <= 75000) return 2.25;
     return 2.0;
   };
   const getHarmonFactor = (pop: number) => 1 + 14 / (4 + Math.sqrt(pop / 1000));
@@ -198,7 +198,7 @@ const SewageCalculationForm: React.FC = () => {
               <th className="border px-2 py-1">Harmon's Peak (MLD)</th>
             )}
             {selectedMethods.includes('babbitt') && (
-              <th className="border px-2 py-1">Babbitt's Peak (MLD)</th>
+              <th className="border px-2 py-1">Babbit's Peak (MLD)</th>
             )}
           </tr>
         </thead>
