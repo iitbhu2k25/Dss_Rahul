@@ -27,6 +27,8 @@ const Basic: React.FC = () => {
   const [count, setCount] = useState<Number[]>([0, 1, 2, 3]);
   const [currentCount, setCurrentCount] = useState<Number | null>();
 
+  
+
   const handleLocationConfirm = (data: SelectedLocationData): void => {
     console.log('Received confirmed location data:', data);
     setSelectedLocationData(data);

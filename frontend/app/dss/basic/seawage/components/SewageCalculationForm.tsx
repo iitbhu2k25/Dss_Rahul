@@ -324,6 +324,59 @@ const SewageCalculationForm: React.FC = () => {
     );
   }, [pollutionItemsState, unmeteredSupplyInput, computedPopulation]);
 
+
+  const handlepdfDownload = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Sewage Calculation Report", 14, 20);
+    doc.setFontSize(12);
+    doc.text("Sewage Method: " + sewageMethod, 14, 30);
+    doc.text("Domestic Load Method: " + domesticLoadMethod, 14, 40);
+    doc.text("Total Water Supply: " + totalSupplyInput, 14, 50);
+    doc.text("Domestic Water Supply: " + domesticSupplyInput, 14, 60);
+    doc.text("Unmetered Water Supply: " + unmeteredSupplyInput, 14, 70);
+    doc.text("Pollution Items:", 14, 80);
+  
+    // Prepare pollution rows
+    const pollutionRows = pollutionItemsState.map((item) => [item.name, item.perCapita]);
+    autoTable(doc, {
+      head: [["Item", "Per Capita Contribution (g/c/d)"]],
+      body: pollutionRows,
+      startY: 90,
+    });
+    const finalYAfterPollution = ((doc as any).lastAutoTable?.finalY || 90) as number;
+    doc.text("Sewage Result:", 14, finalYAfterPollution + 10);
+    const sewageRows = Object.entries(sewageResult).map(([year, value]: [string, unknown]) => [year, value as number]);
+    autoTable(doc, {
+      head: [["Year", "Sewage Generation (MLD)"]],
+      body: sewageRows,
+      startY: finalYAfterPollution + 15,
+    });
+    const finalYAfterSewage = ((doc as any).lastAutoTable?.finalY || finalYAfterPollution + 15) as number;
+    doc.text("Peak Flow Calculation:", 14, finalYAfterSewage + 10);
+    // If you have data for peak flow, construct the rows accordingly.
+    // Here we assume you build peakRows from your peakFlowTable data.
+    const peakRows: (string | number)[][] = [];// Build your peak flow rows here.
+    autoTable(doc, {
+      head: [["Year", "Population", "Avg Sewage Flow (MLD)", "CPHEEO Peak (MLD)", "Harmon's Peak (MLD)", "Babbitt's Peak (MLD)"]],
+      body: peakRows,
+      startY: finalYAfterSewage + 15,
+    });
+    const finalYAfterPeak = ((doc as any).lastAutoTable?.finalY || finalYAfterSewage + 15) as number;
+    doc.text("Raw Sewage Characteristics:", 14, finalYAfterPeak + 10);
+    // Similarly, extract raw sewage rows from your rawSewageTable data.
+    const rawRows: (string | number)[][] = []; // Build raw sewage rows here. // Build raw sewage rows here.
+    autoTable(doc, {
+      head: [["Item", "Per Capita Contribution (g/c/d)", "Concentration (mg/l)"]],
+      body: rawRows,
+      startY: finalYAfterPeak + 15,
+    });
+    doc.save("Sewage_Calculation_Report.pdf");
+  };
+  
+  
+  
+
   return (
     <div className="p-4 border rounded bg-white space-y-8">
       <h3 className="text-xl font-semibold mb-3">Sewage Calculation</h3>
@@ -512,17 +565,15 @@ const SewageCalculationForm: React.FC = () => {
         {showRawSewage && <div className="mt-4">{rawSewageJSX}</div>}
       </div>
 
-      
-
       <button 
         className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md transition duration-300 ease-in-out"
-        
+        onClick={handlepdfDownload}
       >
         Download Comprehensive Report
       </button>
-
-
     </div>
+    
+  
   );
 };
 
