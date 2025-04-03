@@ -284,7 +284,7 @@ const WaterDemandForm: React.FC = () => {
               type="number" 
               value={perCapitaConsumption}
               onChange={handlePerCapitaChange}
-              className="border rounded ml-2 w-24"
+              className="border rounded ml-2 w-24 bg-white"
             />
           </label>
         </div>
@@ -302,7 +302,7 @@ const WaterDemandForm: React.FC = () => {
                   type="number" 
                   value={floatingPopulation2011 ?? ''}
                   onChange={handleFloatingPopulationChange}
-                  className="mt-1 block w-xs border rounded px-2 py-1"
+                  className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                   placeholder='Enter number'
                 />
               </label>
@@ -338,7 +338,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hospitals_100_units"
                 value={institutionalFields.hospitals100Units}
                 onChange={(e) => handleInstitutionalFieldChange('hospitals100Units', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -351,7 +351,7 @@ const WaterDemandForm: React.FC = () => {
                 id="beds_100"
                 value={institutionalFields.beds100}
                 onChange={(e) => handleInstitutionalFieldChange('beds100', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -364,7 +364,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hospitals_less_100"
                 value={institutionalFields.hospitalsLess100}
                 onChange={(e) => handleInstitutionalFieldChange('hospitalsLess100', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -377,7 +377,7 @@ const WaterDemandForm: React.FC = () => {
                 id="beds_less_100"
                 value={institutionalFields.bedsLess100}
                 onChange={(e) => handleInstitutionalFieldChange('bedsLess100', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -390,7 +390,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hotels"
                 value={institutionalFields.hotels}
                 onChange={(e) => handleInstitutionalFieldChange('hotels', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -403,7 +403,7 @@ const WaterDemandForm: React.FC = () => {
                 id="beds_hotels"
                 value={institutionalFields.bedsHotels}
                 onChange={(e) => handleInstitutionalFieldChange('bedsHotels', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -416,7 +416,7 @@ const WaterDemandForm: React.FC = () => {
                 id="hostels"
                 value={institutionalFields.hostels}
                 onChange={(e) => handleInstitutionalFieldChange('hostels', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -429,7 +429,7 @@ const WaterDemandForm: React.FC = () => {
                 id="residents_hostels"
                 value={institutionalFields.residentsHostels}
                 onChange={(e) => handleInstitutionalFieldChange('residentsHostels', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -442,7 +442,7 @@ const WaterDemandForm: React.FC = () => {
                 id="nurses_home"
                 value={institutionalFields.nursesHome}
                 onChange={(e) => handleInstitutionalFieldChange('nursesHome', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -455,7 +455,7 @@ const WaterDemandForm: React.FC = () => {
                 id="residents_nurses_home"
                 value={institutionalFields.residentsNursesHome}
                 onChange={(e) => handleInstitutionalFieldChange('residentsNursesHome', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -468,7 +468,7 @@ const WaterDemandForm: React.FC = () => {
                 id="boarding_schools"
                 value={institutionalFields.boardingSchools}
                 onChange={(e) => handleInstitutionalFieldChange('boardingSchools', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -481,7 +481,7 @@ const WaterDemandForm: React.FC = () => {
                 id="students_boarding_schools"
                 value={institutionalFields.studentsBoardingSchools}
                 onChange={(e) => handleInstitutionalFieldChange('studentsBoardingSchools', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -494,7 +494,7 @@ const WaterDemandForm: React.FC = () => {
                 id="restaurants"
                 value={institutionalFields.restaurants}
                 onChange={(e) => handleInstitutionalFieldChange('restaurants', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -507,7 +507,7 @@ const WaterDemandForm: React.FC = () => {
                 id="seats_restaurants"
                 value={institutionalFields.seatsRestaurants}
                 onChange={(e) => handleInstitutionalFieldChange('seatsRestaurants', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -520,7 +520,7 @@ const WaterDemandForm: React.FC = () => {
                 id="airports_seaports"
                 value={institutionalFields.airportsSeaports}
                 onChange={(e) => handleInstitutionalFieldChange('airportsSeaports', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -533,7 +533,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_airports"
                 value={institutionalFields.populationLoadAirports}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadAirports', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -546,7 +546,7 @@ const WaterDemandForm: React.FC = () => {
                 id="junction_stations"
                 value={institutionalFields.junctionStations}
                 onChange={(e) => handleInstitutionalFieldChange('junctionStations', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -559,7 +559,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_junction"
                 value={institutionalFields.populationLoadJunction}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadJunction', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -572,7 +572,7 @@ const WaterDemandForm: React.FC = () => {
                 id="terminal_stations"
                 value={institutionalFields.terminalStations}
                 onChange={(e) => handleInstitutionalFieldChange('terminalStations', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -585,7 +585,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_terminal"
                 value={institutionalFields.populationLoadTerminal}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadTerminal', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -598,7 +598,7 @@ const WaterDemandForm: React.FC = () => {
                 id="intermediate_bathing"
                 value={institutionalFields.intermediateBathing}
                 onChange={(e) => handleInstitutionalFieldChange('intermediateBathing', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -611,7 +611,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_bathing"
                 value={institutionalFields.populationLoadBathing}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadBathing', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -624,7 +624,7 @@ const WaterDemandForm: React.FC = () => {
                 id="intermediate_no_bathing"
                 value={institutionalFields.intermediateNoBathing}
                 onChange={(e) => handleInstitutionalFieldChange('intermediateNoBathing', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -637,7 +637,7 @@ const WaterDemandForm: React.FC = () => {
                 id="population_load_no_bathing"
                 value={institutionalFields.populationLoadNoBathing}
                 onChange={(e) => handleInstitutionalFieldChange('populationLoadNoBathing', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -650,7 +650,7 @@ const WaterDemandForm: React.FC = () => {
                 id="day_schools"
                 value={institutionalFields.daySchools}
                 onChange={(e) => handleInstitutionalFieldChange('daySchools', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -663,7 +663,7 @@ const WaterDemandForm: React.FC = () => {
                 id="students_day_schools"
                 value={institutionalFields.studentsDaySchools}
                 onChange={(e) => handleInstitutionalFieldChange('studentsDaySchools', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -676,7 +676,7 @@ const WaterDemandForm: React.FC = () => {
                   id="offices"
                   value={institutionalFields.offices}
                   onChange={(e) => handleInstitutionalFieldChange('offices', e.target.value)}
-                  className="mt-1 block w-xs border rounded px-2 py-1"
+                  className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                   placeholder="Enter number"
                 />
             </div>
@@ -689,7 +689,7 @@ const WaterDemandForm: React.FC = () => {
                 id="employees_offices"
                 value={institutionalFields.employeesOffices}
                 onChange={(e) => handleInstitutionalFieldChange('employeesOffices', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />   
             </div>
@@ -703,7 +703,7 @@ const WaterDemandForm: React.FC = () => {
                 id="factories"
                 value={institutionalFields.factorieswashrooms}
                 onChange={(e) => handleInstitutionalFieldChange('factorieswashrooms', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -716,7 +716,7 @@ const WaterDemandForm: React.FC = () => {
                 id="employees_factories"
                 value={institutionalFields.employeesFactories}
                 onChange={(e) => handleInstitutionalFieldChange('employeesFactories', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -729,7 +729,7 @@ const WaterDemandForm: React.FC = () => {
                 id="factories_no_washrooms"
                 value={institutionalFields.factoriesnoWashrooms}
                 onChange={(e) => handleInstitutionalFieldChange('factoriesnoWashrooms', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />              
             </div>
@@ -742,7 +742,7 @@ const WaterDemandForm: React.FC = () => {
                 id="employees_factories_no_washrooms"
                 value={institutionalFields.employeesFactoriesNoWashrooms}
                 onChange={(e) => handleInstitutionalFieldChange('employeesFactoriesNoWashrooms', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div> 
@@ -756,7 +756,7 @@ const WaterDemandForm: React.FC = () => {
                 id="cinemas"
                 value={institutionalFields.cinemas}
                 onChange={(e) => handleInstitutionalFieldChange('cinemas', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
@@ -769,7 +769,7 @@ const WaterDemandForm: React.FC = () => {
                 id="seats_cinemas"
                 value={institutionalFields.seatsCinemas}
                 onChange={(e) => handleInstitutionalFieldChange('seatsCinemas', e.target.value)}
-                className="mt-1 block w-xs border rounded px-2 py-1"
+                className="mt-1 block w-full sm:w-1/2 md:w-64/70 bg-white border rounded px-2 py-1"
                 placeholder="Enter number"
               />
             </div>
